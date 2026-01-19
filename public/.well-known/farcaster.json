@@ -1,0 +1,17 @@
+{
+  "accountAssociation": {
+    "header": "...", 
+    "payload": "...",
+    "signature": "..."
+  },
+  "frame": {
+    "version": "1",
+    "name": "Basecaster",
+    "iconUrl": "https://basecaster-live.vercel.app/icon.png",
+    "homeUrl": "https://basecaster-live.vercel.app",
+    "imageUrl": "https://basecaster-live.vercel.app/opengraph-image.png",
+    "buttonTitle": "Launch",
+    "splashImageUrl": "https://basecaster-live.vercel.app/splash.png",
+    "splashBackgroundColor": "#eeeee4"
+  }
+}
