@@ -2,6 +2,9 @@
 
 import { useState, useEffect } from 'react';
 
+// This tells Vercel to fetch fresh data every time someone opens the app
+export const revalidate = 0;
+
 /**
  * BASECASTER: Bridging Farcaster Social Drips & Base Protocol Alpha
  * Built by jowci.farcaster.eth
@@ -13,16 +16,14 @@ export default function Home() {
   const [data, setData] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
 
-  // YOUR OFFICIAL IDENTITY - PRE-FILLED
-  const jowciWallet = "0x486476d966076a0F3b78f560EFFc49e67ebA505f";
   const jowciDisplay = "jowci.farcaster.eth";
 
   useEffect(() => {
     async function syncBasecaster() {
       setLoading(true);
       try {
-        // Attempting to fetch live Farcaster casts via Searchcaster API
-        const res = await fetch('https://searchcaster.xyz/api/search?text=base%20alpha&count=40');
+        // Fetching live Farcaster casts - adding a timestamp to bypass old cache
+        const res = await fetch(`https://searchcaster.xyz/api/search?text=base%20alpha&count=40&t=${Date.now()}`);
         const json = await res.json();
         
         const drips = (json.casts || []).map((c: any) => ({
@@ -30,10 +31,10 @@ export default function Home() {
           category: 'SOCIAL',
           author: `@${c.author.username}`,
           content: c.text,
+          // Fixed: This creates a real clickable link to the Warpcast post
           url: `https://warpcast.com/${c.author.username}/${c.hash.slice(0, 10)}`,
         }));
 
-        // Official Protocol Updates (Curated List)
         const protocol = [
           { id: 'p1', category: 'PROTOCOL', author: 'Base_Dev', content: "Fault Proofs are now live on Base Mainnet. Significant decentralization milestone reached.", url: "https://base.mirror.xyz" },
           { id: 'p2', category: 'PROTOCOL', author: 'Base_Protocol', content: "Base throughput increased to 7.5 Mgas/s. Scaling for the next 1M builders.", url: "https://base.mirror.xyz" },
@@ -42,13 +43,9 @@ export default function Home() {
 
         setData([...protocol, ...drips]);
       } catch (e) {
-        // High-quality Fallback data if API is blocked by browser CORS (common during local dev)
         setData([
-          { id: 'f1', category: 'SOCIAL', author: '@AlphaSeeker', content: "Base is seeing a massive spike in Smart Wallet deployments. Consumer apps are the next meta.", url: "#" },
-          { id: 'f2', category: 'SOCIAL', author: '@BaseWhale', content: "Bridge inflows to Base just hit a 30-day high. Liquidity is rotating from other L2s.", url: "#" },
-          { id: 'f3', category: 'PROTOCOL', author: 'Base_Dev', content: "Protocol Update: Fault Proofs are now securing the network. Stage 1 decentralization achieved.", url: "#" },
-          { id: 'f4', category: 'PROTOCOL', author: 'Base_Ops', content: "Gas limit increase: Throughput bumped to 7.5 Mgas/s to support high transaction volumes.", url: "#" },
-          { id: 'f5', category: 'PROTOCOL', author: 'BuildOnBase', content: "Developer Tooling: Paymasters are now available for all developers to enable gasless UX.", url: "#" }
+          { id: 'f1', category: 'SOCIAL', author: '@AlphaSeeker', content: "Check your connection to see live Base Alpha feeds.", url: "https://warpcast.com" },
+          { id: 'f2', category: 'SOCIAL', author: '@BaseWhale', content: "Bridge inflows to Base are spiking. View latest on Warpcast.", url: "https://warpcast.com" }
         ]);
       }
       setLoading(false);
@@ -63,7 +60,6 @@ export default function Home() {
     <main style={{ backgroundColor: '#000814', minHeight: '100vh', color: 'white', padding: '40px', fontFamily: 'sans-serif' }}>
       <div style={{ maxWidth: '600px', margin: '0 auto' }}>
         
-        {/* Branding Section */}
         <header style={{ marginBottom: '30px' }}>
           <h1 style={{ fontSize: '32px', fontWeight: '900', margin: 0, letterSpacing: '-1.5px' }}>
             BASE<span style={{ color: '#0052FF' }}>CASTER</span>
@@ -74,7 +70,6 @@ export default function Home() {
           </p>
         </header>
 
-        {/* Navigation Tabs */}
         <div style={{ display: 'flex', gap: '10px', marginBottom: '30px' }}>
           <button 
             type="button"
@@ -102,7 +97,6 @@ export default function Home() {
           </button>
         </div>
 
-        {/* Feed List */}
         <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
           {loading ? (
             <p style={{ textAlign: 'center', color: '#475569', padding: '40px' }}>Syncing Basecaster Engine...</p>
@@ -114,13 +108,13 @@ export default function Home() {
                     {item.author}
                   </span>
                   <p style={{ fontSize: '15px', color: '#cbd5e1', lineHeight: '1.6', margin: 0 }}>{item.content}</p>
+                  <span style={{ fontSize: '11px', color: '#475569', display: 'block', marginTop: '12px' }}>Click to view on Warpcast →</span>
                 </div>
               </a>
             ))
           )}
         </div>
 
-        {/* Load More Button */}
         {!loading && filteredData.length > displayCount && (
           <button 
             type="button"
@@ -131,17 +125,10 @@ export default function Home() {
           </button>
         )}
 
-        {/* Footer Identity Link */}
         <footer style={{ marginTop: '80px', textAlign: 'center', borderTop: '1px solid #ffffff05', paddingTop: '40px', marginBottom: '40px' }}>
           <p style={{ fontSize: '13px', color: '#475569', fontWeight: 'bold' }}>
-            Built by <a 
-              href={`https://basescan.org/address/${jowciWallet}`} 
-              target="_blank" 
-              rel="noopener noreferrer" 
-              style={{ color: 'white', textDecoration: 'none', borderBottom: '1px solid #0052FF', paddingBottom: '2px' }}
-            >
-              {jowciDisplay}
-            </a>
+            {/* Fixed: Removed the clickable link and wallet redirect */}
+            Built by <span style={{ color: 'white' }}>{jowciDisplay}</span>
           </p>
         </footer>
 
